@@ -13,6 +13,7 @@
 // on https://astexplorer.net: Press ctrl+space for code completion
 
 import Logger from "./utils/logger";
+import handleImportExtension from "./utils/import-file-extension";
 import { isTopNode } from "./utils/filters";
 
 function transformer(file, api, options) {
@@ -64,9 +65,9 @@ function transformer(file, api, options) {
                         if (!j.Literal.check(sourcePath)) {
                             logger.error(
                                 `${logger.lines(declaration)} bad argument.` +
-                                    "Expecting a string literal, got " +
-                                    j(sourcePath).toSource() +
-                                    "`. Aborting transformation"
+                                "Expecting a string literal, got " +
+                                j(sourcePath).toSource() +
+                                "`. Aborting transformation"
                             );
                             return file.source;
                         }
@@ -74,6 +75,8 @@ function transformer(file, api, options) {
                             logger.log("Unknown declaration", declaration);
                         }
                         const specify = j.importSpecifier(declaration.init.property, declaration?.init?.property);
+
+                        handleImportExtension(sourcePath)
                         imports.push(j.importDeclaration([specify], sourcePath));
                     } else if (declaration.id.type === "ObjectPattern") {
                         // named import
@@ -94,12 +97,14 @@ function transformer(file, api, options) {
                         if (!j.Literal.check(sourcePath)) {
                             logger.error(
                                 `${logger.lines(declaration)} bad argument.` +
-                                    "Expecting a string literal, got " +
-                                    j(sourcePath).toSource() +
-                                    "`. Aborting transformation"
+                                "Expecting a string literal, got " +
+                                j(sourcePath).toSource() +
+                                "`. Aborting transformation"
                             );
                             return file.source;
                         }
+
+                        handleImportExtension(sourcePath)
                         imports.push(j.importDeclaration([importSpecifier], sourcePath));
                     } else if (declaration.id.type === "ObjectPattern") {
                         // named import
@@ -120,12 +125,13 @@ function transformer(file, api, options) {
                         if (!j.Literal.check(sourcePath)) {
                             logger.error(
                                 `${logger.lines(declaration)} bad argument.` +
-                                    "Expecting a string literal, got " +
-                                    j(sourcePath).toSource() +
-                                    "`. Aborting transformation"
+                                "Expecting a string literal, got " +
+                                j(sourcePath).toSource() +
+                                "`. Aborting transformation"
                             );
                             return file.source;
                         }
+                        handleImportExtension(sourcePath)
                         imports.push(j.importDeclaration(specifiers, sourcePath));
                     }
                 } else {

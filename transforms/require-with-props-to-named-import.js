@@ -16,6 +16,7 @@
 
 import Logger from "./utils/logger";
 import { isTopNode } from "./utils/filters";
+import handleImportExtension from "./utils/import-file-extension";
 
 function transformer(file, api, options) {
     const j = api.jscodeshift;
@@ -69,9 +70,9 @@ function transformer(file, api, options) {
                         if (!j.Literal.check(sourcePath)) {
                             logger.error(
                                 `${logger.lines(declaration)} bad argument.` +
-                                    "Expecting a string literal, got " +
-                                    j(sourcePath).toSource() +
-                                    "`. Aborting transformation"
+                                "Expecting a string literal, got " +
+                                j(sourcePath).toSource() +
+                                "`. Aborting transformation"
                             );
                             return file.source;
                         }
@@ -80,6 +81,8 @@ function transformer(file, api, options) {
                             return file.source;
                         }
                         const specify = j.importSpecifier(declaration.init.property, declaration.id);
+
+                        handleImportExtension(sourcePath)
                         imports.push(j.importDeclaration([specify], sourcePath));
                     } else if (declaration.id.type === "ObjectPattern") {
                         // named import
